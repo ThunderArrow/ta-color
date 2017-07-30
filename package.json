@@ -1,0 +1,29 @@
+{
+	"name": "ta-color",
+	"version": "1.0.0",
+	"description": "A typescript module for color manipulation",
+	"main": "dist/index.min.js",
+	"typings": "src/index.d.ts",
+	"author": "Thunder Arrow",
+	"email": "contact@thunder-arrow.com",
+	"url": "http://www.thunder-arrow.com/",
+	"license": "MIT",
+	"bugs": {
+		"email": "contact@thunder-arrow.com",
+		"url": "https://github.com/ThunderArrow/ta-color/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ThunderArrow/ta-color.git"
+	},
+	"scripts": {
+		"build": "rimraf dist && webpack --config webpack. config.js --progress --profile --bail"
+	},
+	"devDependencies": {
+		"awesome-typescript-loader": "^3.0.4",
+		"tslint": "^5.5.0",
+		"tslint-eslint-rules": "^4.1.1",
+		"typescript": "~2.3.1",
+		"webpack": "2.2.1"
+	}
+}
