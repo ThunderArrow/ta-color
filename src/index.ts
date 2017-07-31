@@ -64,7 +64,7 @@ export class Color {
 	 * @returns {string}
 	 */
 	public get hsl(): string {
-		return 'hsl(' + this._hue + '%, ' + this._saturation + '%, ' + this._lightness + '%)';
+		return 'hsl(' + this._hue + ', ' + this._saturation + '%, ' + this._lightness + '%)';
 	}
 
 	/**
@@ -72,7 +72,7 @@ export class Color {
 	 * @returns {string}
 	 */
 	public get hsla(): string {
-		return 'hsla(' + this._hue + '%, ' + this._saturation + '%, ' + this._lightness + '%, ' + this._alpha + ')';
+		return 'hsla(' + this._hue + ', ' + this._saturation + '%, ' + this._lightness + '%, ' + this._alpha + ')';
 	}
 
 	/**
@@ -111,8 +111,8 @@ export class Color {
 	 */
 	public static fromHSLAString(color: string): Color {
 		const capture = hslaRegex.exec(color);
-		return Color.fromRGBA(parseInt(capture[2], 10), parseInt(capture[3], 10) / 100, parseInt(capture[4], 10) / 100,
-			capture[1] === 'rgba' ? parseFloat(capture[5]) : 1);
+		return Color.fromHSLA(parseInt(capture[2], 10), parseInt(capture[3], 10), parseInt(capture[4], 10),
+			capture[1] === 'hsla' ? parseFloat(capture[5]) : 1);
 	}
 
 	/**
