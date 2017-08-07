@@ -198,6 +198,7 @@ export class Color {
 	 * @returns {Color}
 	 */
 	public static fromString(color: string): Color {
+		if (color == null) return null;
 		const c = this[Str.capitalize(color)];
 		if (c != null) return c;
 		if (rgbaRegex.test(color)) return Color.fromRGBAString(color);
@@ -225,7 +226,7 @@ export class Color {
 	}
 
 	private static screenChannel(c1: number, c2: number): number {
-		return Math.round(255 - (255 - c1) * (255 - c2) / 255);
+		return Math.round(c1 + c2 - c1 * c2 / 255);
 	}
 	// endregion
 
@@ -372,10 +373,13 @@ export class Color {
 	 * @returns {Color}
 	 */
 	public overlay(other: Color): Color {
+		const r = this._red * 2;
+		const g = this._green * 2;
+		const b = this._blue * 2;
 		return Color.fromRGBA(
-			(this._red >= 128 ? Color.screenChannel : Color.multiplyChannel)(this._red, other._red),
-			(this._green >= 128 ? Color.screenChannel : Color.multiplyChannel)(this._green, other._green),
-			(this._blue >= 128 ? Color.screenChannel : Color.multiplyChannel)(this._blue, other._blue),
+			(r > 255 ? Color.screenChannel(r - 255, other._red) : Color.multiplyChannel(r, other._red)),
+			(g > 255 ? Color.screenChannel(g - 255, other._green) : Color.multiplyChannel(g, other._green)),
+			(b > 255 ? Color.screenChannel(b - 255, other._blue) : Color.multiplyChannel(b, other._blue)),
 			this._alpha
 		);
 	}
