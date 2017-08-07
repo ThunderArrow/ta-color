@@ -64,7 +64,7 @@ export class Color {
 	 * @returns {string}
 	 */
 	public get hsl(): string {
-		return 'hsl(' + this._hue + '%, ' + this._saturation + '%, ' + this._lightness + '%)';
+		return 'hsl(' + this._hue + ', ' + this._saturation + '%, ' + this._lightness + '%)';
 	}
 
 	/**
@@ -72,7 +72,7 @@ export class Color {
 	 * @returns {string}
 	 */
 	public get hsla(): string {
-		return 'hsla(' + this._hue + '%, ' + this._saturation + '%, ' + this._lightness + '%, ' + this._alpha + ')';
+		return 'hsla(' + this._hue + ', ' + this._saturation + '%, ' + this._lightness + '%, ' + this._alpha + ')';
 	}
 
 	/**
@@ -111,8 +111,8 @@ export class Color {
 	 */
 	public static fromHSLAString(color: string): Color {
 		const capture = hslaRegex.exec(color);
-		return Color.fromRGBA(parseInt(capture[2], 10), parseInt(capture[3], 10) / 100, parseInt(capture[4], 10) / 100,
-			capture[1] === 'rgba' ? parseFloat(capture[5]) : 1);
+		return Color.fromHSLA(parseInt(capture[2], 10), parseInt(capture[3], 10), parseInt(capture[4], 10),
+			capture[1] === 'hsla' ? parseFloat(capture[5]) : 1);
 	}
 
 	/**
@@ -124,6 +124,9 @@ export class Color {
 	 * @returns {Color}
 	 */
 	public static fromRGBA(red: number, green: number, blue: number, alpha: number = 1): Color {
+		red = Math.min(Math.max(red, 0), 255);
+		green = Math.min(Math.max(green, 0), 255);
+		blue = Math.min(Math.max(blue, 0), 255);
 		const color = new Color();
 		color._red = red;
 		color._green = green;
@@ -143,6 +146,11 @@ export class Color {
 	 * @returns {Color}
 	 */
 	public static fromHSVA(hue: number, saturation: number, brightness: number, alpha: number = 1): Color {
+		hue = hue % 360;
+		if (hue < 0) hue += 360;
+		saturation = Math.min(Math.max(saturation, 0), 100);
+		brightness = Math.min(Math.max(brightness, 0), 100);
+
 		const color = new Color();
 		color._brightnessSaturation = saturation;
 		color._brightness = brightness;
@@ -169,6 +177,7 @@ export class Color {
 	 */
 	public static fromHexCode(color: string): Color {
 		const capture = hexRegex.exec(color);
+		if (capture == null) return null;
 		return Color.fromRGBA(parseInt(capture[1], 16), parseInt(capture[2], 16), parseInt(capture[3], 16),
 			capture[4] !== undefined ? parseInt(capture[4], 16) / 255 : 1);
 	}
@@ -182,6 +191,11 @@ export class Color {
 	 * @returns {Color}
 	 */
 	public static fromHSLA(hue: number, saturation: number, lightness: number, alpha: number = 1): Color {
+		hue = hue % 360;
+		if (hue < 0) hue += 360;
+		saturation = Math.min(Math.max(saturation, 0), 100);
+		lightness = Math.min(Math.max(lightness, 0), 100);
+
 		const color = new Color();
 		color._hue = hue;
 		color._saturation = saturation;
@@ -198,6 +212,7 @@ export class Color {
 	 * @returns {Color}
 	 */
 	public static fromString(color: string): Color {
+		if (color == null) return null;
 		const c = this[Str.capitalize(color)];
 		if (c != null) return c;
 		if (rgbaRegex.test(color)) return Color.fromRGBAString(color);
@@ -225,7 +240,7 @@ export class Color {
 	}
 
 	private static screenChannel(c1: number, c2: number): number {
-		return Math.round(255 - (255 - c1) * (255 - c2) / 255);
+		return Math.round(c1 + c2 - c1 * c2 / 255);
 	}
 	// endregion
 
@@ -252,7 +267,7 @@ export class Color {
 	 * @returns {Color}
 	 */
 	public desaturate(percent: number): Color {
-		return Color.fromHSLA(this._hue, Math.max(0, this._saturation - percent), this._lightness, this._alpha);
+		return Color.fromHSLA(this._hue, this._saturation - percent, this._lightness, this._alpha);
 	}
 
 	/**
@@ -261,7 +276,7 @@ export class Color {
 	 * @returns {Color}
 	 */
 	public saturate(percent: number): Color {
-		return Color.fromHSLA(this._hue, Math.min(100, this._saturation + percent), this._lightness, this._alpha);
+		return Color.fromHSLA(this._hue, this._saturation + percent, this._lightness, this._alpha);
 	}
 
 	/**
@@ -270,7 +285,7 @@ export class Color {
 	 * @returns {Color}
 	 */
 	public darken(percent: number): Color {
-		return Color.fromHSLA(this._hue, this._saturation, Math.max(0, this._lightness - percent), this._alpha);
+		return Color.fromHSLA(this._hue, this._saturation, this._lightness - percent, this._alpha);
 	}
 
 	/**
@@ -279,7 +294,7 @@ export class Color {
 	 * @returns {Color}
 	 */
 	public lighten(percent: number): Color {
-		return Color.fromHSLA(this._hue, this._saturation, Math.min(1000, this._lightness + percent), this._alpha);
+		return Color.fromHSLA(this._hue, this._saturation, this._lightness + percent, this._alpha);
 	}
 
 	/**
@@ -288,7 +303,7 @@ export class Color {
 	 * @returns {Color}
 	 */
 	public spin(degree: number): Color {
-		return Color.fromHSLA((this._hue + degree + 360) % 360, this._saturation, this._lightness, this._alpha);
+		return Color.fromHSLA(this._hue + degree + 360, this._saturation, this._lightness, this._alpha);
 	}
 
 	/**
@@ -329,7 +344,7 @@ export class Color {
 	 * @returns {Color}
 	 */
 	public mix(other: Color, weight: number): Color {
-		const w = 1 - weight;
+		const w = 1 - Math.min(Math.max(weight, 0), 1);
 		return Color.fromRGBA(
 			Math.round(this._red * weight + other._red * w),
 			Math.round(this._green * weight + other._green * w),
@@ -372,10 +387,13 @@ export class Color {
 	 * @returns {Color}
 	 */
 	public overlay(other: Color): Color {
+		const r = this._red * 2;
+		const g = this._green * 2;
+		const b = this._blue * 2;
 		return Color.fromRGBA(
-			(this._red >= 128 ? Color.screenChannel : Color.multiplyChannel)(this._red, other._red),
-			(this._green >= 128 ? Color.screenChannel : Color.multiplyChannel)(this._green, other._green),
-			(this._blue >= 128 ? Color.screenChannel : Color.multiplyChannel)(this._blue, other._blue),
+			(r > 255 ? Color.screenChannel(r - 255, other._red) : Color.multiplyChannel(r, other._red)),
+			(g > 255 ? Color.screenChannel(g - 255, other._green) : Color.multiplyChannel(g, other._green)),
+			(b > 255 ? Color.screenChannel(b - 255, other._blue) : Color.multiplyChannel(b, other._blue)),
 			this._alpha
 		);
 	}
