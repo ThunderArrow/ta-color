@@ -331,9 +331,9 @@ export class Color {
 	 * @returns {Color}
 	 */
 	public contrast(dark: Color = Color.Black, light = Color.White): Color {
-		const cl = this.luma;
-		const dl = dark.luma;
-		const ll = light.luma;
+		const cl = this.luminance;
+		const dl = dark.luminance;
+		const ll = light.luminance;
 		return Math.abs(cl - dl) > Math.abs(cl - ll) ? dark : light;
 	}
 
