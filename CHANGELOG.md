@@ -1,5 +1,10 @@
 # TA-Color - Changelog
 
+## `v1.0.2` 2017-08-08
+* Fixes
+	* Added missing dev dependency rimraf
+	* Fixed contrast method to use the luminance instead of luma
+
 ## `v1.0.1` 2017-08-07
 
 * readme file updated and changelog file done

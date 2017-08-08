@@ -1,6 +1,6 @@
 {
 	"name": "ta-color",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "A typescript module for color manipulation",
 	"main": "dist/index.min.js",
 	"typings": "src/index.d.ts",
